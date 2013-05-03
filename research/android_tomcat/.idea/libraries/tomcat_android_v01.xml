@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="tomcat_android_v01">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/tomcat_android_v01.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

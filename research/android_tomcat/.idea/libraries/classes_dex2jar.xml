@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="classes_dex2jar">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/tomcat_android_v01/classes_dex2jar.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
