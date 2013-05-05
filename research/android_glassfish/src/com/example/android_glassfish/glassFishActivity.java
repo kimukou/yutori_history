@@ -1,16 +1,19 @@
 package com.example.android_glassfish;
 
+import java.io.File;
+
+import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.embedded.ContainerBuilder;
+import org.glassfish.api.embedded.EmbeddedDeployer;
+import org.glassfish.api.embedded.EmbeddedFileSystem;
+import org.glassfish.api.embedded.Server;
+
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.webkit.WebView;
 import android.widget.Toast;
-import org.glassfish.embeddable.GlassFish;
-import org.glassfish.embeddable.GlassFishException;
-import org.glassfish.embeddable.GlassFishProperties;
-import org.glassfish.embeddable.GlassFishRuntime;
-
-import java.io.File;
 
 /*
  ref http://d.hatena.ne.jp/backpaper0/20110525
@@ -41,59 +44,46 @@ public class glassFishActivity extends Activity {
         stopServer();
     }
 
-    private GlassFishRuntime gfr;
-    private GlassFish gf;
+    private Server server;
+    private EmbeddedDeployer deployer ;
     private void initServer() {
+    	
         try {
-            gfr = GlassFishRuntime.bootstrap();
-            GlassFishProperties props = new GlassFishProperties();
-            props.setPort("http-listener", port);
-
-            // GlassFishのインスタンス作ってサーバ起動？
-            gf = gfr.newGlassFish(props);
-            gf.start();
-
-/*
-            // JDBCコネクションプールとJDBCリソース作成
-            gf.getCommandRunner().run(
-                    "create-jdbc-connection-pool",
-                    "--datasourceclassname",
-                    "org.apache.derby.jdbc.EmbeddedDataSource40",
-                    "--property",
-                    "user=sa:password=pwd:databaseName=gftest",
-                    "gftest");
-
-            gf.getCommandRunner().run(
-                    "create-jdbc-resource",
-                    "--connectionpoolid",
-                    "gftest",
-                    "jdbc/gftest");
-*/
-            // デ　プ　ロ　イ　(｀・ω・´)ｼｬｷｰﾝ
-            gf.getDeployer().deploy(
-                    new File("src/main/webapp"),
-                    "--contextroot",
-                    "sample",
-                    "--name",
-                    "sampleapp");
+        	Server.Builder builder = new Server.Builder(TAG);
+        	EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
+            efsb.autoDelete(false);
+            efsb.installRoot(Environment.getRootDirectory());
+            EmbeddedFileSystem efs = efsb.build();
+            builder.embeddedFileSystem(efs);
+            
+            server = builder.build();
+            server.addContainer(ContainerBuilder.Type.web);
+            server.createPort(port);
+            server.start();
+            
+            deployer = server.getDeployer();
+            DeployCommandParameters params = new DeployCommandParameters();
+            params.property.put("--contextroot", "sample");
+            params.property.put("--name", "sampleapp");
+            deployer.deploy(new File("src/main/webapp"),params);
 
             String msg = String.format("server port(%d) start", port);
             Log.d(TAG, msg);
             Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-        } catch (GlassFishException ex) {
+        } catch (Exception ex) {
             Log.e(TAG, "initServer",ex);
         }
     }
 
     private void stopServer() {
         try {
-            if(gf!=null)gf.stop();
-            if(gfr!=null)gfr.shutdown();
+        	if(deployer!=null)deployer.undeployAll();
+            if(server!=null)server.stop();
 
             String msg = String.format("server port(%d) stop", port);
             Log.d(TAG, msg);
             Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-        } catch (GlassFishException ex) {
+        } catch (Exception ex) {
             Log.e(TAG, "stopServer",ex);
         }
     }

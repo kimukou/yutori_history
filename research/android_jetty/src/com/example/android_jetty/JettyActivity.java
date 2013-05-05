@@ -24,8 +24,11 @@ public class JettyActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.main);
+        java.lang.System.setProperty("java.net.preferIPv6Addresses", "false");
+        java.lang.System.setProperty("java.net.preferIPv4Stack", "true");
+        
         initServer();
-
+        
         WebView wv = initWebView();
         wv.addJavascriptInterface(new WebSocketFactory(wv), "WebSocketFactory");
         

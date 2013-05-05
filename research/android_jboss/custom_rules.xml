@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <!-- Converts this project's .class files into .dex files -->
+    <target name="-jarjar" depends="-compile">
+        <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"
+                 classpath="buildtools/jarjar-1.4.jar"/>
+        <jarjar jarfile="${out.absolute.dir}/repackagedclasses.jar">
+            <zipgroupfileset dir="libs" includes="*.jar" />
+            <rule pattern="java.beans.**" result="jboss.beans.@1"/>
+            <rule pattern="javax.xml.**" result="jboss.xml.@1"/>
+            <rule pattern="javax.management.**" result="jboss.management.@1"/>
+            <rule pattern="javax.security.**" result="jboss.security.@1"/>
+            <rule pattern="javax.transaction.**" result="jboss.transaction.@1"/>
+        </jarjar>
+    </target>
+    
+	<!--//直下にapkをコピー -->
+	<property name="out.final.file.change" location="${out.dir}/../${release.app.name}_${release.app.version}.apk" />
+	<target name="aftert-copy">
+		<copy file="${out.final.file}" tofile="${out.final.file.change}"/>
+	</target>
+
+ 	<!-- //コピーしたものをinstall -->
+	<target name="after-install" depends="uninstall">
+		<exec executable="${adb}" failonerror="true">
+	        <arg line="${adb.device.arg}" />
+	        <arg value="install" />
+	        <arg value="-r" />
+	        <arg path="${out.final.file.change}" />
+	    </exec>
+	</target>
+
+	<target name="after-run">
+		<exec executable="${adb}" failonerror="true">
+	        <arg line="${adb.device.arg}" />
+	        <arg line="shell am start -a install android.intent.action.MAIN" />
+	        <arg value="-n" />
+	        <arg line="com.example.tomcat_android/tomcatActivity" />
+	    </exec>
+	</target>
+		
+</project>
