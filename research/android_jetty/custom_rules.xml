@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="create_all_jar" default="fat_jar">
+<project name="create_all_jar">
 
     <property name="exclude.file" location="about.html" />
     <property name="src.dir" location="libs_mst" />
@@ -15,7 +15,18 @@
 			    <include name="**/*.jar"/>
 			</fileset>
 		</unjar>
-		<jar destfile="${dest.jar.file}" basedir="work" update="false" />
+		<delete file="${dest.jar.file}"/>
+		<jar destfile="${dest.jar.file}" basedir="work" duplicate="preserve" update="false" />
 	</target>
+	
+    <target name="fat_jarjar">
+		<delete file="${dest.jar.file}"/>
+        <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"
+                 classpath="buildtools/jarjar-1.4.jar"/>
+        <jarjar jarfile="${dest.jar.file}">
+            <zipgroupfileset dir="${src.dir}" includes="*.jar" />
+            <zap pattern="about.html"/>
+        </jarjar>
+    </target>
 	
 </project>
