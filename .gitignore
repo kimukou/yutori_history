@@ -20,3 +20,11 @@ out/
 #.classpath
 #.project
 
+
+jetty-distribution-8.1.10.v20130312
+jetty-distribution-9.0.2.v20130417
+embedded-jboss-beta3.SP12
+websocket-android-phonegap-master
+i-jetty-3.1
+
+.metadata

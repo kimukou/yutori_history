@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="create_all_jar" default="fat_jar">
+
+    <property name="exclude.file" location="about.html" />
+    <property name="src.dir" location="libs_mst" />
+    <property name="dest.dir" location="libs" />
+    <property name="dest.jar.file" location="${dest.dir}/jetty-all-8.1.10.v20130312.jar" />
+    	
+    <target name="fat_jar">
+		<unjar dest="work">
+			<patternset>
+				<exclude name="${exclude.file}" />
+			</patternset>
+			<fileset dir="${src.dir}">
+			    <include name="**/*.jar"/>
+			</fileset>
+		</unjar>
+		<jar destfile="${dest.jar.file}" basedir="work" update="false" />
+	</target>
+	
+</project>
